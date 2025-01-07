@@ -1,8 +1,8 @@
 package main
 
 import (
-	"EtheneBillingPanel/src"
 	"fmt"
+	"github.com/TonimatasDEV/EtheneBillingPanel/src"
 	"net/http"
 )
 
