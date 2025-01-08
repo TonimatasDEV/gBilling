@@ -1,10 +1,12 @@
-body {
+#loginPage {
     font-family: Arial, sans-serif;
-    text-align: center;
-    color: blue;
-    margin-top: 50px;
-}
-
-h1 {
-    color: blue;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #010101;
+    color: #dcdcdc;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 }
