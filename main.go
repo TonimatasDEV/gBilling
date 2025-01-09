@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/TonimatasDEV/EtheneBillingPanel/src/pages"
+	"github.com/TonimatasDEV/BillingPanel/src/pages"
 	"log"
 	"net/http"
 )

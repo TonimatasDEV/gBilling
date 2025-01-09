@@ -1,8 +1,8 @@
 package src
 
 import (
-	"github.com/TonimatasDEV/EtheneBillingPanel/src/auth"
-	"github.com/TonimatasDEV/EtheneBillingPanel/src/utils"
+	"github.com/TonimatasDEV/BillingPanel/src/auth"
+	"github.com/TonimatasDEV/BillingPanel/src/utils"
 	"net/http"
 	"time"
 )
