@@ -1,21 +1,22 @@
 package src
 
 import (
+	"github.com/TonimatasDEV/EtheneBillingPanel/src/auth"
 	"github.com/TonimatasDEV/EtheneBillingPanel/src/utils"
 	"net/http"
 	"time"
 )
 
-var validUser = map[string]string{
-	"admin": "admin", // username: password
+type Error struct {
+	Text string
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		username := r.FormValue("username")
+		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		if validPassword(username, password) {
+		if validPassword(email, password) {
 			http.SetCookie(w, &http.Cookie{
 				Name:    "session_token",
 				Value:   "some_secure_session_token", // In a real application, use a secure token
@@ -25,6 +26,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
+		/*
+			err := Error{
+				Text: "Invalid credentials.",
+			}
+
+			utils.SendTemplate(w, "login.html", err, "templates/login.html")
+		*/
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
@@ -38,7 +46,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func validPassword(username, password string) bool {
-	expectedPassword, ok := validUser[username]
+func validPassword(email, password string) bool {
+	expectedPassword, ok := auth.Users[email]
 	return ok && expectedPassword == password
 }
