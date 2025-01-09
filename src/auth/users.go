@@ -1,10 +1,11 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
-
-var users = map[string]string{
-	"admin@admin.com": "$2a$10$POnxwr26JnnEtcazSyniHOLqVARw1F4JvATKUtUocexooRwC0ITK2", // email: password
-}
+import (
+	"database/sql"
+	"errors"
+	"github.com/TonimatasDEV/BillingPanel/src/database"
+	"golang.org/x/crypto/bcrypt"
+)
 
 func HashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -14,12 +15,28 @@ func HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func CheckPassword(email, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(users[email]), []byte(password))
-	return err == nil
+func InsertUser(email, password string) error {
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		return err
+	}
+
+	query := "INSERT INTO users (email, password_hash) VALUES (?, ?)"
+	_, err = database.DATABASE.Exec(query, email, hashedPassword)
+	return err
 }
 
-func EmailExist(email string) bool {
-	_, ok := users[email]
-	return ok
+func CheckPassword(email, password string) (bool, error) {
+	var passwordHash string
+	query := "SELECT password_hash FROM users WHERE email = ?"
+	err := database.DATABASE.QueryRow(query, email).Scan(&passwordHash)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, errors.New("user not found")
+		}
+		return false, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password))
+	return err == nil, nil
 }

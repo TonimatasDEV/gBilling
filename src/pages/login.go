@@ -16,11 +16,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		if !auth.EmailExist(email) {
+		ok, err := auth.CheckPassword(email, password)
+
+		if err != nil { // TODO: Send the error to the login page.
 			http.Error(w, "Not account found with "+email+".", http.StatusBadRequest)
+			return
 		}
 
-		if auth.CheckPassword(email, password) {
+		if ok {
 			time.Sleep(25 * time.Millisecond)
 			http.SetCookie(w, &http.Cookie{
 				Name:    "session_token", // TODO: Generate secure tokens.
@@ -31,14 +34,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		/* TODO: Send a message to the login page.
-		err := Error{
-			Text: "Invalid credentials.",
-		}
 
-		utils.SendTemplate(w, "login.html", err, "templates/login.html")
-		*/
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized) // TODO: Send the error to the login page.
 		return
 	}
 
