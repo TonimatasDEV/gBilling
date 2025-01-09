@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"errors"
+	"github.com/TonimatasDEV/BillingPanel/src/database"
 	"github.com/TonimatasDEV/BillingPanel/src/pages"
+	"github.com/TonimatasDEV/BillingPanel/src/utils"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +15,8 @@ import (
 )
 
 func main() {
+	utils.LoadEnvFile()
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	http.HandleFunc("/", auth(src.IndexHandler))
@@ -27,7 +31,7 @@ func main() {
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("Server crashed: %v\n", err)
+			log.Fatalln("Server crashed:", err)
 		}
 	}()
 
@@ -39,7 +43,12 @@ func main() {
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		log.Printf("Error stopping the server: %v\n", err)
+		err := db.Close()
+		if err != nil {
+			log.Println("Error occurred closing the database:", err)
+		}
+
+		log.Println("Error stopping the server:", err)
 	}
 
 	log.Println("Server stopped successfully.")
