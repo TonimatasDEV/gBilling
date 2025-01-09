@@ -1,4 +1,4 @@
-module github.com/TonimatasDEV/EtheneBillingPanel
+module github.com/TonimatasDEV/BillingPanel
 
 go 1.23
 
