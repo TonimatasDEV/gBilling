@@ -19,6 +19,11 @@ func Connect() *sql.DB {
 		log.Fatalln("Error occurred connecting to the database:", err)
 	}
 
+	err = db.Ping()
+	if err != nil {
+		log.Fatalln("Error occurred connecting to the database:", err)
+	}
+
 	DATABASE = db
 	log.Println("Connected to the database successfully.")
 	return db
