@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Login - Ethene Hosting</title>
   <link rel="stylesheet" type="text/css" href="/static/style.css">
-  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="icon" type="image/svg+xml" href="https://avatars.githubusercontent.com/u/192627681">
 </head>
 <body id="loginPage">
 <h1>Login</h1>
-<form method="POST" action="/login">
-  <ion-icon name="person-outline"></ion-icon>
-  <label for="username">Username:</label>
-  <input type="text" id="username" name="username" required>
-  <br>
-  <ion-icon name="key-outline"></ion-icon>
-  <label for="password">Password:</label>
-  <input type="password" id="password" name="password" required>
-  <br>
-  <button type="submit">Login</button>
+<form method="POST" action="/login" class="loginForm">
+  <label for="email" class="loginLabel">Email:</label>
+  <div class="line">
+    <img class="loginIcon" src="/static/assets/mail-outline.svg" alt="Mail">
+    <input type="email" id="email" name="email" placeholder="example@example.com" required>
+    <br>
+  </div>
+  <label for="password" class="loginLabel">Password:</label>
+  <div class="line">
+    <img class="loginIcon" src="/static/assets/key-outline.svg" alt="Key">
+    <input type="password" id="password" name="password" placeholder="********" required>
+    <br>
+  </div>
+  <!-- <p>{{.Text}}</p> -->
+  <a href="" class="forgotPassword">Forgot password?</a> <!-- TODO: Finish reset password system -->
+  <button type="submit" class="loginButton">Login</button>
 </form>
 </body>
 </html>
