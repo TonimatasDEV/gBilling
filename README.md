@@ -1,0 +1,41 @@
+# Billing Panel
+### Back-end:
+ - [ ] Users
+ - [ ] Packages
+ - [ ] Roles
+ - [ ] Orders
+ - [ ] Invoices
+ - [ ] Announcements
+ - [ ] Tickets
+ - [ ] Anti-Fraud Plugin
+ - [ ] Pterodactyl Plugin
+ - [ ] PayPal Gateway (One-Time payment and subscriptions)
+ - [ ] Auto-Processor
+ - [ ] Captcha
+ - [ ] Mail Sender
+ - [ ] Taxes
+ - [ ] Fail to ban (3 tries ban IP 1 minute)
+ - [ ] Coupons
+### Front-end:
+ - [ ] Login
+ - [ ] Register
+ - [ ] Verify
+ - [ ] Client Area
+   - [ ] Home/Dashboard
+   - [ ] Shop
+   - [ ] Package Config and Checkout
+   - [ ] Tickets
+   - [ ] Announcements
+ - [ ] Admin Area
+   - [ ] Dashboard
+   - [ ] Addon Manager (To create addons for packages)
+   - [ ] Package Manager (To create packages in the shop)
+   - [ ] Order Manager
+   - [ ] Invoice Manager (Paid, Unpaid, Failed)
+   - [ ] Coupons Manager
+   - [ ] Tax Manager
+   - [ ] Role Manager (Admin, User)
+   - [ ] User Manager
+   - [ ] Configuration (Captcha, Anti-Fraud...)
+   - [ ] Plugins
+
