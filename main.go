@@ -16,6 +16,7 @@ import (
 
 func main() {
 	utils.LoadEnvFile()
+	db := database.Connect()
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
