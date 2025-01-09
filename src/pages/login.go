@@ -16,22 +16,27 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		if validPassword(email, password) {
+		if !auth.EmailExist(email) {
+			http.Error(w, "Not account found with "+email+".", http.StatusBadRequest)
+		}
+
+		if auth.CheckPassword(email, password) {
+			time.Sleep(25 * time.Millisecond)
 			http.SetCookie(w, &http.Cookie{
-				Name:    "session_token",
-				Value:   "some_secure_session_token", // In a real application, use a secure token
+				Name:    "session_token", // TODO: Generate secure tokens.
+				Value:   "some_secure_session_token",
 				Expires: time.Now().Add(1 * time.Hour),
 			})
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
-		/*
-			err := Error{
-				Text: "Invalid credentials.",
-			}
+		/* TODO: Send a message to the login page.
+		err := Error{
+			Text: "Invalid credentials.",
+		}
 
-			utils.SendTemplate(w, "login.html", err, "templates/login.html")
+		utils.SendTemplate(w, "login.html", err, "templates/login.html")
 		*/
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
@@ -44,9 +49,4 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
-}
-
-func validPassword(email, password string) bool {
-	expectedPassword, ok := auth.Users[email]
-	return ok && expectedPassword == password
 }
