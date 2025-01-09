@@ -1,9 +1,15 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"github.com/TonimatasDEV/BillingPanel/src/pages"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -12,13 +18,31 @@ func main() {
 	http.HandleFunc("/", auth(src.IndexHandler))
 	http.HandleFunc("/login", src.LoginHandler)
 
-	log.Println("Starting the server with the port 8080.")
-	err := http.ListenAndServe(":8080", nil)
-
-	if err != nil {
-		log.Fatal("Server crashed: ", err)
-		return
+	server := &http.Server{
+		Addr: ":8080",
 	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("Server crashed: %v\n", err)
+		}
+	}()
+
+	log.Println("Server listening on :8080.")
+
+	<-stop
+	log.Println("Server shutting down.")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Printf("Error stopping the server: %v\n", err)
+	}
+
+	log.Println("Server stopped successfully.")
 }
 
 func auth(next http.HandlerFunc) http.HandlerFunc {
