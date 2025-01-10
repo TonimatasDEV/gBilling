@@ -21,14 +21,14 @@ func InsertUser(email, password string) error {
 		return err
 	}
 
-	query := "INSERT INTO users (email, password_hash) VALUES (?, ?)"
+	query := "INSERT INTO users (email, password) VALUES (?, ?)"
 	_, err = database.DATABASE.Exec(query, email, hashedPassword)
 	return err
 }
 
 func CheckPassword(email, password string) (bool, error) {
 	var passwordHash string
-	query := "SELECT password_hash FROM users WHERE email = ?"
+	query := "SELECT password FROM users WHERE email = ?"
 	err := database.DATABASE.QueryRow(query, email).Scan(&passwordHash)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
