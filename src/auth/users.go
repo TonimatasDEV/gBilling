@@ -15,14 +15,14 @@ func HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func InsertUser(email, password string) error {
+func RegisterUser(email, password, fistName, lastName, phoneNumber, country, countyState, city, zipcode, address, lang, organization string, announcements bool) error {
 	hashedPassword, err := HashPassword(password)
 	if err != nil {
 		return err
 	}
 
-	query := "INSERT INTO users (email, password) VALUES (?, ?)"
-	_, err = database.DATABASE.Exec(query, email, hashedPassword)
+	query := "INSERT INTO users (email, password, first_name, last_name, phone_number, country, country_state, city, zipcode, address, lang, announcements, organization) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	_, err = database.DATABASE.Exec(query, email, hashedPassword, fistName, lastName, phoneNumber, country, countyState, city, zipcode, address, lang, announcements, organization)
 	return err
 }
 
