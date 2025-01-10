@@ -1,6 +1,8 @@
 # Billing Panel
 ### Back-end:
  - [ ] Users
+   - [ ] Verify
+   - [ ] 2FA 
  - [ ] Packages
  - [ ] Roles
  - [ ] Orders
