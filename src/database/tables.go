@@ -4,6 +4,7 @@ import "log"
 
 func CreateTables() {
 	users()
+	sessions()
 	log.Println("Database tables successfully checked.")
 }
 
@@ -36,6 +37,21 @@ func users() {
 		two_factor_auth BOOLEAN NOT NULL DEFAULT FALSE,
 	    two_factor_auth_secret VARCHAR(255)
 	);`
+
+	createTable(query)
+}
+
+func sessions() {
+	query := `
+    CREATE TABLE IF NOT EXISTS sessions (
+		id INT AUTO_INCREMENT PRIMARY KEY,
+    	email VARCHAR(255) UNIQUE NOT NULL,
+   		token TEXT NOT NULL,
+        expires_at DATETIME NOT NULL,
+    	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        INDEX (email) 
+    );
+    `
 
 	createTable(query)
 }
