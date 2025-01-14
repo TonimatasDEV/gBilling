@@ -45,10 +45,10 @@ func sessions() {
 	query := `
     CREATE TABLE IF NOT EXISTS sessions (
 		id INT AUTO_INCREMENT PRIMARY KEY,
-    	email VARCHAR(255) UNIQUE NOT NULL,
+    	email VARCHAR(255) NOT NULL,
    		token TEXT NOT NULL,
         expires_at DATETIME NOT NULL,
-    	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         INDEX (email) 
     );
     `

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/TonimatasDEV/BillingPanel/src/database"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 func HashPassword(password string) (string, error) {
@@ -26,6 +27,20 @@ func RegisterUser(email, password, fistName, lastName, phoneNumber, country, cou
 	return err
 }
 
+func GetUserId(email string) (int, error) {
+	var id int
+	query := "SELECT id FROM users WHERE email = ?"
+	err := database.DATABASE.QueryRow(query, email).Scan(&id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return -1, errors.New("user not found")
+		}
+		return -1, err
+	}
+
+	return id, nil
+}
+
 func CheckPassword(email, password string) (bool, error) {
 	var passwordHash string
 	query := "SELECT password FROM users WHERE email = ?"
@@ -39,4 +54,25 @@ func CheckPassword(email, password string) (bool, error) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password))
 	return err == nil, nil
+}
+
+func CheckSession(w http.ResponseWriter, r *http.Request) bool {
+	cookie, err := r.Cookie("ethene_session")
+	if err != nil {
+		return true
+	}
+
+	if validateToken(cookie.Value) {
+		return false
+	} else {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "ethene_session",
+			Value:    "",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   false,
+		})
+	}
+
+	return true
 }
