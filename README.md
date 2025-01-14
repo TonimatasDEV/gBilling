@@ -3,6 +3,7 @@
  - [ ] Users
    - [ ] Verify
    - [ ] 2FA 
+ - [ ] Sessions (Cookies)
  - [ ] Packages
  - [ ] Roles
  - [ ] Orders
