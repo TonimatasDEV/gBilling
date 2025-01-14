@@ -1,9 +1,11 @@
 # Billing Panel
 ### Back-end:
- - [ ] Users
+ - [x] Users
    - [ ] Verify
    - [ ] 2FA 
- - [ ] Sessions (Cookies)
+ - [x] Sessions (Cookies)
+   - [ ] Check OS
+   - [ ] Check IP
  - [ ] Packages
  - [ ] Roles
  - [ ] Orders
@@ -29,6 +31,7 @@
    - [ ] Package Config and Checkout
    - [ ] Tickets
    - [ ] Announcements
+   - [ ] Sessions
  - [ ] Admin Area
    - [ ] Dashboard
    - [ ] Addon Manager (To create addons for packages)

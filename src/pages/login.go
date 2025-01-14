@@ -25,11 +25,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		if ok {
 			time.Sleep(25 * time.Millisecond)
-			http.SetCookie(w, &http.Cookie{
-				Name:    "session_token", // TODO: Generate secure tokens.
-				Value:   "some_secure_session_token",
-				Expires: time.Now().Add(1 * time.Hour),
-			})
+
+			token, err := auth.GenerateToken(email)
+			if err == nil {
+				http.SetCookie(w, &http.Cookie{
+					Name:     "ethene_session",
+					Value:    token,
+					HttpOnly: true,
+					Secure:   true,
+					Expires:  time.Now().Add(time.Hour * 24 * 30),
+					SameSite: http.SameSiteStrictMode,
+				})
+			}
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
@@ -39,9 +46,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, err := r.Cookie("session_token")
-
-	if err != nil || cookie.Value != "some_secure_session_token" {
+	if auth.CheckSession(w, r) {
 		utils.SendTemplate(w, "login.html", nil, "templates/login.html")
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)

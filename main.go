@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	auth2 "github.com/TonimatasDEV/BillingPanel/src/auth"
 	"github.com/TonimatasDEV/BillingPanel/src/database"
 	"github.com/TonimatasDEV/BillingPanel/src/pages"
 	"github.com/TonimatasDEV/BillingPanel/src/utils"
@@ -58,11 +59,11 @@ func main() {
 
 func auth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("session_token")
-		if err != nil || cookie.Value != "some_secure_session_token" {
+		if auth2.CheckSession(w, r) {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
+
 		next(w, r)
 	}
 }
