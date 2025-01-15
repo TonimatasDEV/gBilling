@@ -1,34 +1,42 @@
 package auth
 
 import (
-	"crypto/rand"
+	"errors"
 	"github.com/TonimatasDEV/BillingPanel/src/database"
-	"math/big"
+	"github.com/golang-jwt/jwt/v5"
+	"os"
 	"time"
 )
 
-var charset = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$&*()_[]")
+type Claims struct {
+	Email string `json:"email"`
+	jwt.RegisteredClaims
+}
 
 func GenerateToken(email string) (string, error) {
-	expiration := time.Now().Add(time.Hour * 24 * 30)
+	expirationTime := time.Now().Add(time.Hour * 24 * 30)
 
-	token := make([]rune, 128)
-
-	for i := range token {
-		idx, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
-		if err != nil {
-			return "", err
-		}
-
-		token[i] = charset[idx.Int64()]
+	claims := &Claims{
+		Email: email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+		},
 	}
 
-	err := saveToken(email, string(token), expiration)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+
+	if err != nil {
+		println(err.Error())
+		return "", err
+	}
+
+	err = saveToken(email, tokenString, expirationTime)
 	if err != nil {
 		return "", err
 	}
 
-	return string(token), nil
+	return tokenString, nil
 }
 
 func saveToken(email string, tokenString string, expiresAt time.Time) error {
@@ -37,15 +45,28 @@ func saveToken(email string, tokenString string, expiresAt time.Time) error {
 	return err
 }
 
-func validateToken(token string) bool {
-	query := "SELECT token FROM sessions WHERE token = ?"
-	_, err := database.DATABASE.Exec(query, token)
+func validateToken(tokenString string) (bool, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
 
-	if err != nil || checkTokenExpiration(token) {
-		return false
+	if err != nil {
+		return false, err
 	}
 
-	return true
+	if !token.Valid {
+		return false, nil
+	}
+
+	if checkTokenExpiration(tokenString) {
+		return false, nil
+	}
+
+	return checkEmailMatch(claims.Email, tokenString), nil
 }
 
 func checkTokenExpiration(token string) bool {
@@ -55,7 +76,6 @@ func checkTokenExpiration(token string) bool {
 	query := "SELECT token, expires_at FROM sessions WHERE token = ?"
 	err := database.DATABASE.QueryRow(query, token).Scan(&storedToken, &expiresAt)
 	if err != nil {
-		println(err.Error())
 		return true
 	}
 
@@ -70,6 +90,17 @@ func checkTokenExpiration(token string) bool {
 	}
 
 	return false
+}
+
+func checkEmailMatch(email string, token string) bool {
+	var storedEmail string
+	query := "SELECT email FROM sessions WHERE token = ?"
+	err := database.DATABASE.QueryRow(query, token).Scan(&storedEmail)
+	if err != nil {
+		return false
+	}
+
+	return email == storedEmail
 }
 
 func removeExpiredToken(token string) {
