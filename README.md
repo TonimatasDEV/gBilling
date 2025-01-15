@@ -44,4 +44,3 @@
    - [ ] User Manager
    - [ ] Configuration (Captcha, Anti-Fraud...)
    - [ ] Plugins
-

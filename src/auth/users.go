@@ -58,20 +58,24 @@ func CheckPassword(email, password string) (bool, error) {
 
 func CheckSession(w http.ResponseWriter, r *http.Request) bool {
 	cookie, err := r.Cookie("ethene_session")
+
 	if err != nil {
+		println(err.Error())
 		return true
 	}
 
-	if validateToken(cookie.Value) {
+	ok, err := validateToken(cookie.Value)
+
+	if ok && err == nil {
 		return false
 	} else {
-		http.SetCookie(w, &http.Cookie{
-			Name:     "ethene_session",
-			Value:    "",
-			MaxAge:   -1,
-			HttpOnly: true,
-			Secure:   false,
-		})
+		//http.SetCookie(w, &http.Cookie{
+		//	Name:     "ethene_session",
+		//	Value:    "",
+		//	MaxAge:   -1,
+		//	HttpOnly: true,
+		//	Secure:   false,
+		//})
 	}
 
 	return true
