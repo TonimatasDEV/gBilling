@@ -19,7 +19,7 @@ func createTable(query string) {
 func users() {
 	query := `
 	CREATE TABLE IF NOT EXISTS users (
-		id INT AUTO_INCREMENT PRIMARY KEY,
+		id INT AUTO_INCREMENT PRIMARY KEY UNIQUE,
 		email VARCHAR(255) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
 	    first_name VARCHAR(100) NOT NULL,
