@@ -1,10 +1,7 @@
 package src
 
 import (
-	"github.com/TonimatasDEV/BillingPanel/src/auth"
-	"github.com/TonimatasDEV/BillingPanel/src/utils"
 	"net/http"
-	"time"
 )
 
 type Error struct {
@@ -12,6 +9,7 @@ type Error struct {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	/* TODO: Only send login data.
 	if r.Method == http.MethodPost {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
@@ -47,8 +45,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if auth.CheckSession(w, r) {
-		utils.SendTemplate(w, "login.html", nil, "templates/login.html")
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
+	*/
 }

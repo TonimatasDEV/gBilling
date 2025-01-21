@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	auth2 "github.com/TonimatasDEV/BillingPanel/src/auth"
 	"github.com/TonimatasDEV/BillingPanel/src/database"
 	"github.com/TonimatasDEV/BillingPanel/src/pages"
 	"github.com/TonimatasDEV/BillingPanel/src/utils"
@@ -20,10 +19,7 @@ func main() {
 	db := database.Connect()
 	database.CreateTables()
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-
-	http.HandleFunc("/", auth(src.IndexHandler))
-	http.HandleFunc("/login", src.LoginHandler)
+	http.HandleFunc("/auth/login", src.LoginHandler)
 
 	server := &http.Server{
 		Addr: ":8080",
@@ -33,7 +29,7 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) { // TODO: Change it to ListenAndServerTLS
 			log.Fatalln("Server crashed:", err)
 		}
 	}()
@@ -57,6 +53,7 @@ func main() {
 	log.Println("Server stopped successfully.")
 }
 
+/* TODO: Rewrite it
 func auth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if auth2.CheckSession(w, r) {
@@ -67,3 +64,4 @@ func auth(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	}
 }
+*/
