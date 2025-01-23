@@ -1,0 +1,57 @@
+#loginPage {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    background-color: #010101;
+    color: #dcdcdc;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.loginLabel {
+    margin-top: 8px;
+}
+
+.line > input {
+    border-radius: 10px;
+    height: 1rem;
+    padding: 0.6rem
+}
+
+.loginButton {
+    margin-top: 12px;
+    border-radius: 10px;
+    height: 2rem;
+    padding: 0.6rem;
+    cursor: pointer;
+    line-height: .8rem;
+    background-color: #d4d4d4;
+}
+
+.forgotPassword {
+    margin-top: 12px;
+    font-size: 14px
+}
+
+.loginIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+    align-self: center;
+    filter: invert(1);
+}
+
+.line {
+    display: flex;
+    align-content: center;
+    gap: 12px;
+    margin-top: 6px;
+}
+
