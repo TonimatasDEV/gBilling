@@ -11,7 +11,7 @@ func LoadEnvFile() {
 	file, err := os.Open(".env")
 
 	if err != nil {
-		log.Fatal("Error opening the env fil:", err)
+		log.Fatalln("Error opening the env fil:", err)
 	}
 
 	defer func(file *os.File) {
@@ -39,12 +39,12 @@ func LoadEnvFile() {
 		err := os.Setenv(key, value)
 
 		if err != nil {
-			log.Println("Error setting env variable:", err)
+			log.Fatalln("Error setting env variable:", err)
 		}
 	}
 
 	if scanner.Err() != nil {
-		log.Fatal("Error scanning the env file: ", scanner.Err())
+		log.Fatalln("Error scanning the env file: ", scanner.Err())
 	}
 
 	log.Println("Loaded env file successfully.")
