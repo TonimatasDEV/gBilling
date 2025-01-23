@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Ethene Hosting</title>
-  <link rel="stylesheet" type="text/css" href="/static/style.css">
-  <link rel="icon" type="image/svg+xml" href="https://avatars.githubusercontent.com/u/192627681">
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Login - Ethene Hosting</title>
+    <link href="/static/style.css" rel="stylesheet" type="text/css">
+    <link href="https://avatars.githubusercontent.com/u/192627681" rel="icon" type="image/svg+xml">
 </head>
 <body id="loginPage">
 <h1>Login</h1>
-<form method="POST" action="/login" class="loginForm">
-  <label for="email" class="loginLabel">Email:</label>
-  <div class="line">
-    <img class="loginIcon" src="/static/assets/mail-outline.svg" alt="Mail">
-    <input type="email" id="email" name="email" placeholder="example@example.com" required>
-    <br>
-  </div>
-  <label for="password" class="loginLabel">Password:</label>
-  <div class="line">
-    <img class="loginIcon" src="/static/assets/key-outline.svg" alt="Key">
-    <input type="password" id="password" name="password" placeholder="********" required>
-    <br>
-  </div>
-  <!-- <p>{{.Text}}</p> -->
-  <a href="" class="forgotPassword">Forgot password?</a> <!-- TODO: Finish reset password system -->
-  <button type="submit" class="loginButton">Login</button>
+<form action="/login" class="loginForm" method="POST">
+    <label class="loginLabel" for="email">Email:</label>
+    <div class="line">
+        <img alt="Mail" class="loginIcon" src="/static/assets/mail-outline.svg">
+        <input id="email" name="email" placeholder="example@example.com" required type="email">
+        <br>
+    </div>
+    <label class="loginLabel" for="password">Password:</label>
+    <div class="line">
+        <img alt="Key" class="loginIcon" src="/static/assets/key-outline.svg">
+        <input id="password" name="password" placeholder="********" required type="password">
+        <br>
+    </div>
+    <!-- <p>{{.Text}}</p> -->
+    <a class="forgotPassword" href="">Forgot password?</a> <!-- TODO: Finish reset password system -->
+    <button class="loginButton" type="submit">Login</button>
 </form>
 </body>
 </html>
