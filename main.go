@@ -34,8 +34,18 @@ func main() {
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalln("Server crashed:", err)
+		if os.Getenv("MODE") == "dev" {
+			if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalln("Server crashed:", err)
+			}
+		} else if os.Getenv("MODE") == "production" {
+			domainSSL := "/etc/letsencrypt/live/" + os.Getenv("DOMAIN") + "/"
+
+			if err := server.ListenAndServeTLS(domainSSL+"fullchain.pem", domainSSL+"privkey.pem"); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				log.Fatalln("Server crashed:", err)
+			}
+		} else {
+			log.Fatalln("Server crashed: MODE not supported.")
 		}
 	}()
 
