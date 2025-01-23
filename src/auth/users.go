@@ -80,6 +80,7 @@ func DeleteCookie(w http.ResponseWriter) {
 		Value:    "",
 		MaxAge:   -1,
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
 	})
 }
