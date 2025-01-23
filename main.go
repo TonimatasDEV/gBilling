@@ -27,7 +27,7 @@ func main() {
 	http.HandleFunc("/login", src.LoginHandler)
 
 	server := &http.Server{
-		Addr: ":8080",
+		Addr: ":" + os.Getenv("PORT"),
 	}
 
 	stop := make(chan os.Signal, 1)
@@ -49,7 +49,7 @@ func main() {
 		}
 	}()
 
-	log.Println("Server listening on :8080.")
+	log.Println("Server listening on :" + os.Getenv("PORT") + ".")
 
 	<-stop
 	log.Println("Server shutting down.")
