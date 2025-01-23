@@ -85,7 +85,7 @@ func checkTokenExpiration(token string) bool {
 	}
 
 	if parse.Before(time.Now()) {
-		removeExpiredToken(token)
+		RemoveToken(token)
 		return true
 	}
 
@@ -103,7 +103,7 @@ func checkEmailMatch(email string, token string) bool {
 	return email == storedEmail
 }
 
-func removeExpiredToken(token string) {
+func RemoveToken(token string) {
 	query := "DELETE FROM sessions WHERE token = ?"
 	_, _ = database.DATABASE.Exec(query, token)
 }
