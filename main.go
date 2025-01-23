@@ -23,6 +23,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	http.HandleFunc("/", auth(src.IndexHandler))
+	http.HandleFunc("/logout", auth(src.LogoutHandler))
 	http.HandleFunc("/login", src.LoginHandler)
 
 	server := &http.Server{
