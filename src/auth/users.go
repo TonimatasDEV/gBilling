@@ -68,14 +68,18 @@ func CheckSession(w http.ResponseWriter, r *http.Request) bool {
 	if ok && err == nil {
 		return false
 	} else {
-		http.SetCookie(w, &http.Cookie{
-			Name:     "ethene_session",
-			Value:    "",
-			MaxAge:   -1,
-			HttpOnly: true,
-			Secure:   false,
-		})
+		DeleteCookie(w)
 	}
 
 	return true
+}
+
+func DeleteCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "ethene_session",
+		Value:    "",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   false,
+	})
 }
