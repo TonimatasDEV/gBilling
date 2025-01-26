@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/TonimatasDEV/BillingPanel/src/auth"
 	"github.com/TonimatasDEV/BillingPanel/src/database"
 	"github.com/TonimatasDEV/BillingPanel/src/pages"
 	"github.com/TonimatasDEV/BillingPanel/src/utils"
@@ -23,9 +22,9 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	http.HandleFunc("/", utils.CheckProxy(auth.Check(src.IndexHandler)))
-	http.HandleFunc("/logout", utils.CheckProxy(auth.Check(src.LogoutHandler)))
-	http.HandleFunc("/login", utils.CheckProxy(src.LoginHandler))
+	utils.HandleFunc("/", src.IndexHandler, false)
+	utils.HandleFunc("/logout", src.LogoutHandler, true)
+	utils.HandleFunc("/login", src.LoginHandler, true)
 
 	server := &http.Server{
 		Addr: ":" + os.Getenv("PORT"),

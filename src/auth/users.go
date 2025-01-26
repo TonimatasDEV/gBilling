@@ -56,7 +56,7 @@ func CheckPassword(email, password string) (bool, error) {
 	return err == nil, nil
 }
 
-func checkSession(w http.ResponseWriter, r *http.Request) bool {
+func CheckSession(w http.ResponseWriter, r *http.Request) bool {
 	cookie, err := r.Cookie("ethene_session")
 
 	if err != nil {
