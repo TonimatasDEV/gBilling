@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	auth2 "github.com/TonimatasDEV/BillingPanel/src/auth"
+	"github.com/TonimatasDEV/BillingPanel/src/auth"
 	"github.com/TonimatasDEV/BillingPanel/src/database"
 	"github.com/TonimatasDEV/BillingPanel/src/pages"
 	"github.com/TonimatasDEV/BillingPanel/src/utils"
@@ -23,8 +23,8 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	http.HandleFunc("/", utils.CheckProxy(auth(src.IndexHandler)))
-	http.HandleFunc("/logout", utils.CheckProxy(auth(src.LogoutHandler)))
+	http.HandleFunc("/", utils.CheckProxy(auth.Check(src.IndexHandler)))
+	http.HandleFunc("/logout", utils.CheckProxy(auth.Check(src.LogoutHandler)))
 	http.HandleFunc("/login", utils.CheckProxy(src.LoginHandler))
 
 	server := &http.Server{
@@ -67,15 +67,4 @@ func main() {
 	}
 
 	log.Println("Server stopped successfully.")
-}
-
-func auth(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if auth2.CheckSession(w, r) {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-
-		next(w, r)
-	}
 }
