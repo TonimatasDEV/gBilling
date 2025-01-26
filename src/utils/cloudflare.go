@@ -65,15 +65,3 @@ func IsCloudflareIP(ip string) bool {
 	}
 	return false
 }
-
-func CheckProxy(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ip, _, _ := net.SplitHostPort(r.RemoteAddr)
-
-		if IsCloudflareIP(ip) || !proxyEnabled {
-			next(w, r)
-		} else {
-			http.Error(w, "Sorry, you are not authorized to access this page.", http.StatusForbidden)
-		}
-	}
-}
