@@ -17,14 +17,15 @@ import (
 
 func main() {
 	utils.LoadEnvFile()
+	utils.InitCloudflare()
 	db := database.Connect()
 	database.CreateTables()
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	http.HandleFunc("/", auth(src.IndexHandler))
-	http.HandleFunc("/logout", auth(src.LogoutHandler))
-	http.HandleFunc("/login", src.LoginHandler)
+	http.HandleFunc("/", utils.CheckProxy(auth(src.IndexHandler)))
+	http.HandleFunc("/logout", utils.CheckProxy(auth(src.LogoutHandler)))
+	http.HandleFunc("/login", utils.CheckProxy(src.LoginHandler))
 
 	server := &http.Server{
 		Addr: ":" + os.Getenv("PORT"),
