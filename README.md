@@ -14,12 +14,12 @@
 - [ ] Invoices
 - [ ] Announcements
 - [ ] Tickets
-- [ ] Anti-Fraud Plugin
+- [ ] Anti-Fraud Plugin (Ignore it at the moment)
 - [ ] Pterodactyl Plugin
 - [ ] PayPal Gateway (One-Time payment and subscriptions)
 - [ ] Auto-Processor
 - [ ] Captcha
-- [ ] Mail Sender
+- [x] Mail Sender
 - [ ] Taxes
 - [ ] Fail to ban (3 tries ban IP 1 minute)
 - [ ] Coupons
@@ -46,5 +46,5 @@
     - [ ] Tax Manager
     - [ ] Role Manager (Admin, User)
     - [ ] User Manager
-    - [ ] Configuration (Captcha, Anti-Fraud...)
+    - [ ] Configuration (Captcha, Pterodactyl, Smtp...)
     - [ ] Plugins
