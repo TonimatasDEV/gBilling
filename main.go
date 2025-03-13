@@ -35,6 +35,8 @@ func main() {
 
 	go func() {
 		if os.Getenv("MODE") == "dev" {
+			log.Println("Web: http://localhost:8080")
+
 			if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				log.Fatalln("Server crashed:", err)
 			}
