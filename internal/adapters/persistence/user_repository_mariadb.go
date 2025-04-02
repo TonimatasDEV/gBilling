@@ -20,8 +20,8 @@ func NewMariaDBUserRepository(dsn string) repositories.UserRepository {
 
 	query := `
 	CREATE TABLE IF NOT EXISTS users (
-		id VARCHAR(36) PRIMARY KEY,
-		email VARCHAR(100) NOT NULL,
+		id INTEGER PRIMARY KEY AUTO_INCREMENT,
+		email VARCHAR(100) NOT NULL UNIQUE,
 		hashed_password VARCHAR(255) NOT NULL
 	)`
 	_, err = db.Exec(query)
@@ -32,9 +32,18 @@ func NewMariaDBUserRepository(dsn string) repositories.UserRepository {
 	return &MariaDBUserRepository{db: db}
 }
 
-func (r *MariaDBUserRepository) Save(user domain.User) {
+func (r *MariaDBUserRepository) Save(user domain.User) error {
 	_, err := r.db.Exec("INSERT INTO users (email, hashed_password) VALUES (?, ?)", user.Email, user.HashedPassword)
-	if err != nil {
-		log.Printf("Error al guardar usuario: %v", err)
-	}
+	return err
+}
+
+func (r *MariaDBUserRepository) GetByEmail(email string) (domain.User, error) {
+	var id int
+	var getEmail string
+	var hashedPassword string
+
+	err := r.db.QueryRow("SELECT * FROM users WHERE email = ?", email).Scan(&id, &getEmail, &hashedPassword)
+	user := domain.User{ID: id, Email: getEmail, HashedPassword: hashedPassword}
+
+	return user, err
 }
