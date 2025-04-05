@@ -1,7 +1,14 @@
 package domain
 
+import "golang.org/x/crypto/bcrypt"
+
 type User struct {
 	ID             int    `json:"id"`
 	Email          string `json:"email"`
 	HashedPassword string `json:"hashedPassword"`
+}
+
+func (u *User) ComparePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.HashedPassword), []byte(password))
+	return err == nil
 }
