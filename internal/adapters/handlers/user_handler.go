@@ -22,7 +22,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 	}
 	_ = json.NewDecoder(r.Body).Decode(&req)
 
-	err, user := h.service.CreateUser(req.Email, req.Password)
+	err := h.service.CreateUser(req.Email, req.Password)
 
 	if err != nil {
 		domain.SendError(w, err)
@@ -30,5 +30,6 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(user)
+
+	domain.SendString(w, "User created successfully.")
 }
