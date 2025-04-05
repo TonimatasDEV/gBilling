@@ -13,12 +13,13 @@ func NewUserService(repo repositories.UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) CreateUser(email string, password string) domain.User {
+func (s *UserService) CreateUser(email string, password string) (error, domain.User) {
 	user := domain.User{
 		ID:             1,
 		Email:          email,
 		HashedPassword: password,
 	}
-	s.repo.Save(user)
-	return user
+
+	err := s.repo.Save(user)
+	return err, user
 }

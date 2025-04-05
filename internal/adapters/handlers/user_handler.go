@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
 	"net/http"
 )
@@ -19,9 +20,15 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	json.NewDecoder(r.Body).Decode(&req)
+	_ = json.NewDecoder(r.Body).Decode(&req)
 
-	user := h.service.CreateUser(req.Email, req.Password)
+	err, user := h.service.CreateUser(req.Email, req.Password)
+
+	if err != nil {
+		domain.SendError(w, err)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(user)
+	_ = json.NewEncoder(w).Encode(user)
 }
