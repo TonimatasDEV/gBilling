@@ -17,6 +17,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/", handlers.HandleMain)
 	mux.HandleFunc("/users/create", handler.CreateUserHandler)
 
 	fmt.Println("Server running on http://localhost:8080")
