@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-linux:
+  build:
     name: Build Linux
     runs-on: self-hosted
     steps:
@@ -17,29 +17,19 @@ jobs:
           go-version: '1.23'
 
       - name: Build
-        run: go build -o dist/billing
+        run: go build -o dist/BillingLinux ./cmd
 
-      - name: Upload a Build Artifact
+      - name: Build Windows
+        run: GOOS=windows GOARCH=amd64 go build -o dist/BillingWindows.exe ./cmd
+
+      - name: Upload a Linux Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BillingLinux
-          path: dist/billing
-  build-windows:
-    name: Build Windows
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
+          path: dist/BillingLinux
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.23'
-
-      - name: Build
-        run: go build -o dist/billing
-
-      - name: Upload a Build Artifact
+      - name: Upload a Windows Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: BillingWindows
-          path: dist/billing
+          path: dist/BillingWindows.exe
