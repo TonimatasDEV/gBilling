@@ -18,7 +18,7 @@ func NewMariaDBUserRepository(db *sql.DB) repositories.UserRepository {
 		id INTEGER PRIMARY KEY AUTO_INCREMENT,
 		email VARCHAR(100) NOT NULL UNIQUE,
 		hashed_password VARCHAR(255) NOT NULL
-	)`
+	) ENGINE=InnoDB`
 
 	_, err := db.Exec(query)
 	if err != nil {
