@@ -12,21 +12,17 @@ type MariaDBUserRepository struct {
 	db *sql.DB
 }
 
-func NewMariaDBUserRepository(dsn string) repositories.UserRepository {
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatalf("Error conectando a la base de datos: %v", err)
-	}
-
+func NewMariaDBUserRepository(db *sql.DB) repositories.UserRepository {
 	query := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTO_INCREMENT,
 		email VARCHAR(100) NOT NULL UNIQUE,
 		hashed_password VARCHAR(255) NOT NULL
 	)`
-	_, err = db.Exec(query)
+
+	_, err := db.Exec(query)
 	if err != nil {
-		log.Fatalf("Error creando la tabla: %v", err)
+		log.Fatalf("Error creating the users table: %v", err)
 	}
 
 	return &MariaDBUserRepository{db: db}
