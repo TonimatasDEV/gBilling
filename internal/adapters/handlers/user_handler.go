@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
+	"github.com/TonimatasDEV/BillingPanel/internal/util"
 	"net/http"
+	"time"
 )
 
 type UserHandler struct {
@@ -59,5 +61,6 @@ func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp.Token = token
 
+	util.AddCookie(w, "session", token, time.Hour*24)
 	_ = json.NewEncoder(w).Encode(resp)
 }
