@@ -31,6 +31,17 @@ func (s *UserService) CreateUser(email string, password string) error {
 	return err
 }
 
+func (s *UserService) Login(email, password string) (string, error) {
+	user, err := s.repo.GetByEmail(email)
+	if err != nil {
+		return "", err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
+
+	return "x", err // TODO: Generate JWT token.
+}
+
 func hashPassword(password string) ([]byte, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return hash, err

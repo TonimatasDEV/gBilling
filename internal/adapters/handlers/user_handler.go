@@ -33,3 +33,31 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 
 	domain.SendString(w, "User created successfully.")
 }
+
+func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	token, err := h.service.Login(req.Email, req.Password)
+
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	var resp struct {
+		Token string `json:"token"`
+	}
+
+	resp.Token = token
+
+	_ = json.NewEncoder(w).Encode(resp)
+}
