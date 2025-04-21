@@ -7,11 +7,12 @@ import (
 )
 
 type UserService struct {
-	repo repositories.UserRepository
+	userRepo    repositories.UserRepository
+	sessionRepo repositories.SessionRepository
 }
 
-func NewUserService(repo repositories.UserRepository) *UserService {
-	return &UserService{repo: repo}
+func NewUserService(userRepo repositories.UserRepository, sessionRepo repositories.SessionRepository) *UserService {
+	return &UserService{userRepo: userRepo, sessionRepo: sessionRepo}
 }
 
 func (s *UserService) CreateUser(email string, password string) error {
@@ -27,17 +28,28 @@ func (s *UserService) CreateUser(email string, password string) error {
 		HashedPassword: string(hashedBytes),
 	}
 
-	err = s.repo.Save(user)
+	err = s.userRepo.Save(user)
 	return err
 }
 
-func (s *UserService) Login(email, password string) (string, bool) {
-	user, err := s.repo.GetByEmail(email)
+func (s *UserService) Login(email, password string) (string, error) {
+	user, err := s.userRepo.GetByEmail(email)
 	if err != nil {
-		return "", false
+		return "", err
 	}
 
-	return "x", user.ComparePassword(password) // TODO: Generate JWT token.
+	err = user.ComparePassword(password)
+	if err != nil {
+		return "", err
+	}
+
+	session, err := s.sessionRepo.Create(user.ID)
+
+	if err != nil {
+		return "", err
+	}
+
+	return session.Token, nil
 }
 
 func hashPassword(password string) ([]byte, error) {

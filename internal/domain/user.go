@@ -9,7 +9,7 @@ type User struct {
 	HashedPassword string `json:"hashedPassword"`
 }
 
-func (u *User) ComparePassword(password string) bool {
+func (u *User) ComparePassword(password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.HashedPassword), []byte(password))
-	return err == nil
+	return err
 }

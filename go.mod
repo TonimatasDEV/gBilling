@@ -6,6 +6,7 @@ toolchain go1.24.0
 
 require (
 	github.com/go-sql-driver/mysql v1.9.2
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	golang.org/x/crypto v0.37.0
 )
 

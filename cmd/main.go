@@ -18,9 +18,10 @@ func main() {
 		log.Fatalf("Error connecting to the database: %v", err)
 	}
 
-	repo := persistence.NewMariaDBUserRepository(db)
+	userRepo := persistence.NewMariaDBUserRepository(db)
+	sessionRepo := persistence.NewMariaDBSessionRepository(db)
 
-	service := services.NewUserService(repo)
+	service := services.NewUserService(userRepo, sessionRepo)
 	handler := handlers.NewUserHandler(service)
 
 	mux := http.NewServeMux()
