@@ -31,15 +31,13 @@ func (s *UserService) CreateUser(email string, password string) error {
 	return err
 }
 
-func (s *UserService) Login(email, password string) (string, error) {
+func (s *UserService) Login(email, password string) (string, bool) {
 	user, err := s.repo.GetByEmail(email)
 	if err != nil {
-		return "", err
+		return "", false
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
-
-	return "x", err // TODO: Generate JWT token.
+	return "x", user.ComparePassword(password) // TODO: Generate JWT token.
 }
 
 func hashPassword(password string) ([]byte, error) {
