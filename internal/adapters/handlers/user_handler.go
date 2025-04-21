@@ -48,9 +48,9 @@ func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.service.Login(req.Email, req.Password)
+	token, ok := h.service.Login(req.Email, req.Password)
 
-	if err != nil {
+	if ok {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
