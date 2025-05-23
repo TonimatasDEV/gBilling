@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
 	"github.com/TonimatasDEV/BillingPanel/internal/util"
 	"github.com/julienschmidt/httprouter"
@@ -34,7 +33,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 
 	if err != nil {
 		if util.IsMysqlError(err, 1062) {
-			domain.SendString(w, "This email already exists.")
+			util.SendString(w, "This email already exists.")
 			return
 		}
 
@@ -44,7 +43,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 
 	w.WriteHeader(http.StatusCreated)
 
-	domain.SendString(w, "User created successfully.")
+	util.SendString(w, "User created successfully.")
 }
 
 func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
