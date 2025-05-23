@@ -5,6 +5,7 @@ import (
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
 	"github.com/TonimatasDEV/BillingPanel/internal/util"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"time"
 )
@@ -17,17 +18,27 @@ func NewUserHandler(service *services.UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
-func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 	_ = json.NewDecoder(r.Body).Decode(&req)
 
+	if req.Email == "" || req.Password == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	err := h.service.CreateUser(req.Email, req.Password)
 
 	if err != nil {
-		domain.SendError(w, err)
+		if util.IsMysqlError(err, 1062) {
+			domain.SendString(w, "This email already exists.")
+			return
+		}
+
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -36,7 +47,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 	domain.SendString(w, "User created successfully.")
 }
 
-func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`

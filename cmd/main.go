@@ -6,6 +6,7 @@ import (
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/handlers"
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/persistence"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
+	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 )
@@ -24,15 +25,15 @@ func main() {
 	service := services.NewUserService(userRepo, sessionRepo)
 	handler := handlers.NewUserHandler(service)
 
-	mux := http.NewServeMux()
+	router := httprouter.New()
 
-	mux.HandleFunc("/", handlers.HandleMain)
-	mux.HandleFunc("/users/create", handler.CreateUserHandler)
-	mux.HandleFunc("/users/login", handler.LoginUserHandler)
+	router.GET("/", handlers.HandleMain)
+	router.POST("/users/create", handler.CreateUserHandler)
+	router.POST("/users/login", handler.LoginUserHandler)
 
 	fmt.Println("Server running on http://localhost:8080")
 
-	err = http.ListenAndServe(":8080", mux)
+	err = http.ListenAndServe(":8080", router)
 	if err != nil {
 		panic(err)
 	}
