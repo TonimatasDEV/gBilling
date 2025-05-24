@@ -47,12 +47,27 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 }
 
 func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	validate, err := h.service.Auth(r)
+	if err == nil {
+		var resp struct {
+			Message string `json:"msg"`
+			Token   string `json:"token"`
+		}
+
+		resp.Message = "Already logged in."
+		resp.Token = validate.Token
+
+		w.WriteHeader(http.StatusOK)
+		_ = json.NewEncoder(w).Encode(resp)
+		return
+	}
+
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err = json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -67,9 +82,11 @@ func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _
 	}
 
 	var resp struct {
-		Token string `json:"token"`
+		Message string `json:"msg"`
+		Token   string `json:"token"`
 	}
 
+	resp.Message = "User logged in successfully."
 	resp.Token = token
 
 	util.AddCookie(w, "session", token, time.Hour*24)

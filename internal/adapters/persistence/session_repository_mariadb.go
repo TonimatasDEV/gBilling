@@ -2,12 +2,15 @@ package persistence
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"time"
 )
+
+const JwtSecret = "8c5b66db3219072f0809036a3fc0f0a4b375f1be7c100014ac06f3d0bac15de7" // Test secret. TODO: Move to env file.
 
 type MariaDBSessionRepository struct {
 	db *sql.DB
@@ -72,14 +75,51 @@ func generateToken(sessionId int64, exp time.Time) (string, error) {
 		"exp":        exp.Unix(),
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
-	signedToken, err := token.SignedString([]byte("8c5b66db3219072f0809036a3fc0f0a4b375f1be7c100014ac06f3d0bac15de7")) // TODO: Use env JWT_SECRET
+	signedToken, err := token.SignedString([]byte(JwtSecret))
 	if err != nil {
 		return "", err
 	}
 
 	return signedToken, nil
+}
+
+func (r *MariaDBSessionRepository) Validate(tokenStr string) (*domain.Session, error) {
+	token, err := getToken(tokenStr)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		sessionID := claims["session_id"].(float64)
+
+		session, err := r.GetById(int64(sessionID))
+		if err != nil {
+			return nil, err
+		}
+
+		rawExp := claims["exp"].(float64)
+		exp := time.Unix(int64(rawExp), 0)
+
+		if !time.Now().After(exp) && session.Token == tokenStr {
+			return session, nil
+		}
+	}
+
+	return nil, errors.New("invalid token")
+}
+
+func getToken(tokenString string) (*jwt.Token, error) {
+	secret := []byte(JwtSecret)
+
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token")
+		}
+		return secret, nil
+	})
 }
 
 func (r *MariaDBSessionRepository) GetById(id int64) (*domain.Session, error) {

@@ -1,9 +1,11 @@
 package services
 
 import (
+	"errors"
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 type UserService struct {
@@ -30,6 +32,23 @@ func (s *UserService) CreateUser(email string, password string) error {
 
 	err = s.userRepo.Save(user)
 	return err
+}
+
+func (s *UserService) Auth(r *http.Request) (*domain.Session, error) {
+	cookies := r.CookiesNamed("session")
+
+	if len(cookies) == 0 {
+		return nil, errors.New("no cookies")
+	}
+
+	cookie := cookies[0]
+
+	validate, err := s.sessionRepo.Validate(cookie.Value)
+	if err != nil {
+		return nil, errors.New("token is invalid")
+	}
+
+	return validate, nil
 }
 
 func (s *UserService) Login(email, password string) (string, error) {
