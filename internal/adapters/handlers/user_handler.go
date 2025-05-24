@@ -33,6 +33,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 
 	if err != nil {
 		if util.IsMysqlError(err, 1062) {
+			w.WriteHeader(http.StatusConflict)
 			util.SendString(w, "This email already exists.")
 			return
 		}
@@ -42,7 +43,6 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 	}
 
 	w.WriteHeader(http.StatusCreated)
-
 	util.SendString(w, "User created successfully.")
 }
 
