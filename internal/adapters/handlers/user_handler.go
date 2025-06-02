@@ -48,12 +48,13 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 
 func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	validate, err := h.service.Auth(r)
-	if err == nil {
-		var resp struct {
-			Message string `json:"msg"`
-			Token   string `json:"token"`
-		}
 
+	var resp struct {
+		Message string `json:"msg"`
+		Token   string `json:"token"`
+	}
+
+	if err == nil {
 		resp.Message = "Already logged in."
 		resp.Token = validate.Token
 
@@ -62,28 +63,17 @@ func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _
 		return
 	}
 
-	var req struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-
-	err = json.NewDecoder(r.Body).Decode(&req)
+	rawUser, err := h.service.GetRawUser(r)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	token, err := h.service.Login(req.Email, req.Password)
+	token, err := h.service.Login(rawUser)
 
 	if err != nil {
-		println(err.Error())
 		w.WriteHeader(http.StatusUnauthorized)
 		return
-	}
-
-	var resp struct {
-		Message string `json:"msg"`
-		Token   string `json:"token"`
 	}
 
 	resp.Message = "User logged in successfully."
@@ -91,4 +81,23 @@ func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _
 
 	util.AddCookie(w, "session", token, time.Hour*24)
 	_ = json.NewEncoder(w).Encode(resp)
+}
+
+func (h *UserHandler) LogoutHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	validate, err := h.service.Auth(r)
+
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	err = h.service.RemoveSession(validate.Token)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	util.RemoveCookie(w, "session")
+	util.SendString(w, "Logged out successfully.")
 }

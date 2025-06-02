@@ -51,13 +51,13 @@ func (s *UserService) Auth(r *http.Request) (*domain.Session, error) {
 	return validate, nil
 }
 
-func (s *UserService) Login(email, password string) (string, error) {
-	user, err := s.userRepo.GetByEmail(email)
+func (s *UserService) Login(rawUser domain.RawUser) (string, error) {
+	user, err := s.userRepo.GetByEmail(rawUser.Email)
 	if err != nil {
 		return "", err
 	}
 
-	err = user.ComparePassword(password)
+	err = user.ComparePassword(rawUser.Password)
 	if err != nil {
 		return "", err
 	}
@@ -69,6 +69,14 @@ func (s *UserService) Login(email, password string) (string, error) {
 	}
 
 	return session.Token, nil
+}
+
+func (s *UserService) RemoveSession(token string) error {
+	return s.sessionRepo.Remove(token)
+}
+
+func (s *UserService) GetRawUser(r *http.Request) (domain.RawUser, error) {
+	return domain.CreateRawUser(r)
 }
 
 func hashPassword(password string) ([]byte, error) {

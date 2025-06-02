@@ -69,6 +69,11 @@ func (r *MariaDBSessionRepository) Create(userId int) (*domain.Session, error) {
 	return session, nil
 }
 
+func (r *MariaDBSessionRepository) Remove(token string) error {
+	_, err := r.db.Exec("DELETE FROM sessions WHERE token = ?", token)
+	return err
+}
+
 func generateToken(sessionId int64, exp time.Time) (string, error) {
 	claims := jwt.MapClaims{
 		"session_id": sessionId,

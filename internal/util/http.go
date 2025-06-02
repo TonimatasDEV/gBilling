@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func AddCookie(w http.ResponseWriter, name string, value string, duration time.Duration) {
+func AddCookie(w http.ResponseWriter, name, value string, duration time.Duration) {
 	cookie := &http.Cookie{
 		Name:     name,
 		Value:    value,
@@ -14,6 +14,19 @@ func AddCookie(w http.ResponseWriter, name string, value string, duration time.D
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
+	}
+
+	http.SetCookie(w, cookie)
+}
+
+func RemoveCookie(w http.ResponseWriter, name string) {
+	cookie := &http.Cookie{
+		Name:     name,
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		HttpOnly: true,
 	}
 
 	http.SetCookie(w, cookie)

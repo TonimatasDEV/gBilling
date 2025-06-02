@@ -30,6 +30,7 @@ func main() {
 	router.GET("/", handlers.HandleMain)
 	router.POST("/users/create", handler.CreateUserHandler)
 	router.POST("/users/login", handler.LoginUserHandler)
+	router.POST("/users/logout", handler.LogoutHandler)
 
 	fmt.Println("Server running on http://localhost:8080")
 
