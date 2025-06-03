@@ -10,10 +10,10 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
 
-    permissions:
+    permissions: # checkov:skip=CKV2_GHA_1 reason: Granular permissions required for Super-Linter
       contents: read
       packages: read
-      statuses: write # checkov:skip=CKV2_GHA_1 reason: Required to report linting status
+      statuses: write
 
     steps:
       - name: Checkout code
