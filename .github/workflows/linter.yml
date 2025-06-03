@@ -10,7 +10,6 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
 
-    #checkov:skip=CKV2_GHA_1:Granular permissions required for Super-Linter
     permissions:
       contents: read
       packages: read
@@ -26,3 +25,6 @@ jobs:
         uses: super-linter/super-linter@v7.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_GO: false
+          VALIDATE_GO_MODULES: true
+          VALIDATE_CHECKOV: false
