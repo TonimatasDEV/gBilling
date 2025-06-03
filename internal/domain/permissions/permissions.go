@@ -1,7 +1,7 @@
 package permissions
 
 const (
-	ALL             = 1 << 0
-	MANAGE_INVOICES = 1 << 1
-	MANAGE_USERS    = 1 << 2
+	ALL            = 1 << 0
+	ManageInvoices = 1 << 1
+	ManageUsers    = 1 << 2
 )

@@ -6,6 +6,7 @@ import (
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/handlers"
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/persistence"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
 	"log"

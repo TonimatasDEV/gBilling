@@ -5,8 +5,8 @@ import (
 )
 
 type SessionRepository interface {
-	Create(userId int) (*domain.Session, error)
+	Create(userID int) (*domain.Session, error)
 	Remove(token string) error
 	Validate(r string) (*domain.Session, error)
-	GetById(id int64) (*domain.Session, error)
+	GetByID(id int64) (*domain.Session, error)
 }

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 )
 

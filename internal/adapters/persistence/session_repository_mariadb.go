@@ -36,10 +36,10 @@ func NewMariaDBSessionRepository(db *sql.DB) repositories.SessionRepository {
 	return &MariaDBSessionRepository{db: db}
 }
 
-func (r *MariaDBSessionRepository) Create(userId int) (*domain.Session, error) {
+func (r *MariaDBSessionRepository) Create(userID int) (*domain.Session, error) {
 	exp := time.Now().UTC().Add(time.Hour * 24)
 
-	res, err := r.db.Exec("INSERT INTO sessions (user_id, exp) VALUES (?, ?)", userId, exp)
+	res, err := r.db.Exec("INSERT INTO sessions (user_id, exp) VALUES (?, ?)", userID, exp)
 
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (r *MariaDBSessionRepository) Create(userId int) (*domain.Session, error) {
 		return nil, err
 	}
 
-	session, err := r.GetById(id)
+	session, err := r.GetByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (r *MariaDBSessionRepository) Validate(tokenStr string) (*domain.Session, e
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		sessionID := claims["session_id"].(float64)
 
-		session, err := r.GetById(int64(sessionID))
+		session, err := r.GetByID(int64(sessionID))
 		if err != nil {
 			return nil, err
 		}
@@ -126,10 +126,10 @@ func getToken(tokenString string) (*jwt.Token, error) {
 	})
 }
 
-func (r *MariaDBSessionRepository) GetById(id int64) (*domain.Session, error) {
+func (r *MariaDBSessionRepository) GetByID(id int64) (*domain.Session, error) {
 	var createdAt string
 	session := &domain.Session{}
-	err := r.db.QueryRow("SELECT * FROM sessions WHERE id = ?", id).Scan(&session.Id, &session.UserId, &session.Token, &createdAt, &session.Exp)
+	err := r.db.QueryRow("SELECT * FROM sessions WHERE id = ?", id).Scan(&session.Id, &session.UserID, &session.Token, &createdAt, &session.Exp)
 
 	createdAtTime, err := time.Parse(time.DateTime, createdAt)
 	if err != nil {
