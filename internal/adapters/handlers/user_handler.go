@@ -17,7 +17,7 @@ func NewUserHandler(service *services.UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
-func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *UserHandler) CreateHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var req struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -46,7 +46,7 @@ func (h *UserHandler) CreateUserHandler(w http.ResponseWriter, r *http.Request, 
 	util.SendString(w, "User created successfully.")
 }
 
-func (h *UserHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	validate, err := h.service.Auth(r)
 
 	var resp struct {
@@ -87,11 +87,12 @@ func (h *UserHandler) LogoutHandler(w http.ResponseWriter, r *http.Request, _ ht
 	validate, err := h.service.Auth(r)
 
 	if err != nil {
+		util.RemoveCookie(w, "session")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	err = h.service.RemoveSession(validate.Token)
+	err = h.service.Logout(validate.Token)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

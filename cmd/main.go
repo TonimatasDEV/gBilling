@@ -22,15 +22,17 @@ func main() {
 	userRepo := persistence.NewMariaDBUserRepository(db)
 	sessionRepo := persistence.NewMariaDBSessionRepository(db)
 
-	service := services.NewUserService(userRepo, sessionRepo)
-	handler := handlers.NewUserHandler(service)
+	sessionService := services.NewSessionService(sessionRepo)
+	userService := services.NewUserService(userRepo, sessionService)
+
+	userHandler := handlers.NewUserHandler(userService)
 
 	router := httprouter.New()
 
 	router.GET("/", handlers.HandleMain)
-	router.POST("/users/create", handler.CreateUserHandler)
-	router.POST("/users/login", handler.LoginUserHandler)
-	router.POST("/users/logout", handler.LogoutHandler)
+	router.POST("/users/create", userHandler.CreateHandler)
+	router.POST("/users/login", userHandler.LoginHandler)
+	router.POST("/users/logout", userHandler.LogoutHandler)
 
 	fmt.Println("Server running on http://localhost:8080")
 

@@ -28,7 +28,7 @@ func NewMariaDBUserRepository(db *sql.DB) repositories.UserRepository {
 	return &MariaDBUserRepository{db: db}
 }
 
-func (r *MariaDBUserRepository) Save(user domain.User) error {
+func (r *MariaDBUserRepository) Create(user domain.User) error {
 	_, err := r.db.Exec("INSERT INTO users (email, hashed_password) VALUES (?, ?)", user.Email, user.HashedPassword)
 	return err
 }

@@ -9,12 +9,12 @@ import (
 )
 
 type UserService struct {
-	userRepo    repositories.UserRepository
-	sessionRepo repositories.SessionRepository
+	userRepo       repositories.UserRepository
+	sessionService *SessionService
 }
 
-func NewUserService(userRepo repositories.UserRepository, sessionRepo repositories.SessionRepository) *UserService {
-	return &UserService{userRepo: userRepo, sessionRepo: sessionRepo}
+func NewUserService(userRepo repositories.UserRepository, sessionService *SessionService) *UserService {
+	return &UserService{userRepo: userRepo, sessionService: sessionService}
 }
 
 func (s *UserService) CreateUser(email string, password string) error {
@@ -30,7 +30,7 @@ func (s *UserService) CreateUser(email string, password string) error {
 		HashedPassword: string(hashedBytes),
 	}
 
-	err = s.userRepo.Save(user)
+	err = s.userRepo.Create(user)
 	return err
 }
 
@@ -43,7 +43,7 @@ func (s *UserService) Auth(r *http.Request) (*domain.Session, error) {
 
 	cookie := cookies[0]
 
-	validate, err := s.sessionRepo.Validate(cookie.Value)
+	validate, err := s.sessionService.Validate(cookie.Value)
 	if err != nil {
 		return nil, errors.New("token is invalid")
 	}
@@ -62,7 +62,7 @@ func (s *UserService) Login(rawUser domain.RawUser) (string, error) {
 		return "", err
 	}
 
-	session, err := s.sessionRepo.Create(user.ID)
+	session, err := s.sessionService.Create(user.ID)
 
 	if err != nil {
 		return "", err
@@ -71,8 +71,8 @@ func (s *UserService) Login(rawUser domain.RawUser) (string, error) {
 	return session.Token, nil
 }
 
-func (s *UserService) RemoveSession(token string) error {
-	return s.sessionRepo.Remove(token)
+func (s *UserService) Logout(token string) error {
+	return s.sessionService.Remove(token)
 }
 
 func (s *UserService) GetRawUser(r *http.Request) (domain.RawUser, error) {
