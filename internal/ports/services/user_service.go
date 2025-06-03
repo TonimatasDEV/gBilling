@@ -34,16 +34,8 @@ func (s *UserService) CreateUser(email string, password string) error {
 	return err
 }
 
-func (s *UserService) Auth(r *http.Request) (*domain.Session, error) {
-	cookies := r.CookiesNamed("session")
-
-	if len(cookies) == 0 {
-		return nil, errors.New("no cookies")
-	}
-
-	cookie := cookies[0]
-
-	validate, err := s.sessionService.Validate(cookie.Value)
+func (s *UserService) Auth(token string) (*domain.Session, error) {
+	validate, err := s.sessionService.Validate(token)
 	if err != nil {
 		return nil, errors.New("token is invalid")
 	}

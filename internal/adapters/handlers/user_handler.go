@@ -22,19 +22,21 @@ func (h *UserHandler) CreateHandler(w http.ResponseWriter, r *http.Request, _ ht
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-	_ = json.NewDecoder(r.Body).Decode(&req)
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		util.SendString(w, http.StatusBadRequest, "Invalid request body.")
+		return
+	}
 
 	if req.Email == "" || req.Password == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	err := h.service.CreateUser(req.Email, req.Password)
-
-	if err != nil {
+	if err := h.service.CreateUser(req.Email, req.Password); err != nil {
 		if util.IsMysqlError(err, 1062) {
 			w.WriteHeader(http.StatusConflict)
-			util.SendString(w, "This email already exists.")
+			util.SendString(w, http.StatusConflict, "This email already exists.")
 			return
 		}
 
@@ -42,12 +44,11 @@ func (h *UserHandler) CreateHandler(w http.ResponseWriter, r *http.Request, _ ht
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	util.SendString(w, "User created successfully.")
+	util.SendString(w, http.StatusCreated, "User created successfully.")
 }
 
 func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	validate, err := h.service.Auth(r)
+	validate, err := h.service.Auth(getCookieValue(r))
 
 	var resp struct {
 		Message string `json:"msg"`
@@ -57,22 +58,20 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request, _ htt
 	if err == nil {
 		resp.Message = "Already logged in."
 		resp.Token = validate.Token
-
-		w.WriteHeader(http.StatusOK)
-		_ = json.NewEncoder(w).Encode(resp)
+		util.SendJSON(w, http.StatusOK, resp)
 		return
 	}
 
 	rawUser, err := h.service.GetRawUser(r)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		util.SendString(w, http.StatusBadRequest, "Invalid user input.")
 		return
 	}
 
 	token, err := h.service.Login(rawUser)
 
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		util.SendString(w, http.StatusUnauthorized, "Email or password is incorrect.")
 		return
 	}
 
@@ -80,15 +79,15 @@ func (h *UserHandler) LoginHandler(w http.ResponseWriter, r *http.Request, _ htt
 	resp.Token = token
 
 	util.AddCookie(w, "session", token, time.Hour*24)
-	_ = json.NewEncoder(w).Encode(resp)
+	util.SendJSON(w, http.StatusOK, resp)
 }
 
 func (h *UserHandler) LogoutHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	validate, err := h.service.Auth(r)
+	validate, err := h.service.Auth(getCookieValue(r))
 
 	if err != nil {
 		util.RemoveCookie(w, "session")
-		w.WriteHeader(http.StatusUnauthorized)
+		util.SendString(w, http.StatusBadRequest, "You are not logged in.")
 		return
 	}
 
@@ -100,5 +99,15 @@ func (h *UserHandler) LogoutHandler(w http.ResponseWriter, r *http.Request, _ ht
 	}
 
 	util.RemoveCookie(w, "session")
-	util.SendString(w, "Logged out successfully.")
+	util.SendString(w, http.StatusOK, "Logged out successfully.")
+}
+
+func getCookieValue(r *http.Request) string {
+	cookies := r.CookiesNamed("session")
+
+	if len(cookies) == 0 {
+		return ""
+	}
+
+	return cookies[0].Value
 }

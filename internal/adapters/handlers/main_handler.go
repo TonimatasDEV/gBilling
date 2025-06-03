@@ -7,5 +7,5 @@ import (
 )
 
 func HandleMain(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
-	util.SendString(w, "Hello World!")
+	util.SendString(w, http.StatusOK, "Hello World!")
 }

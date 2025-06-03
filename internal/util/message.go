@@ -13,7 +13,8 @@ func SendError(w http.ResponseWriter, err error) {
 	create(err.Error()).send(w)
 }
 
-func SendString(w http.ResponseWriter, str string) {
+func SendString(w http.ResponseWriter, status int, str string) {
+	w.WriteHeader(status)
 	create(str).send(w)
 }
 
@@ -23,4 +24,9 @@ func create(str string) *Msg {
 
 func (msg *Msg) send(w http.ResponseWriter) {
 	_ = json.NewEncoder(w).Encode(msg)
+}
+
+func SendJSON(w http.ResponseWriter, status int, payload any) {
+	w.WriteHeader(status)
+	_ = json.NewEncoder(w).Encode(payload)
 }
