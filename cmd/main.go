@@ -6,13 +6,25 @@ import (
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/handlers"
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/persistence"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
+	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	dsn := "root:@tcp(127.0.0.1:3306)/ethene" // TODO
+	if err := godotenv.Load(); err != nil {
+		log.Fatalln("No .env file found or failed to load.")
+	}
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"))
+
 	db, err := sql.Open("mysql", dsn)
 
 	if err != nil {
@@ -34,9 +46,9 @@ func main() {
 	router.POST("/users/login", userHandler.LoginHandler)
 	router.POST("/users/logout", userHandler.LogoutHandler)
 
-	fmt.Println("Server running on http://localhost:8080")
+	log.Printf("Server running on http://localhost:%s\n", os.Getenv("PORT"))
 
-	err = http.ListenAndServe(":8080", router)
+	err = http.ListenAndServe(":"+os.Getenv("PORT"), router)
 	if err != nil {
 		panic(err)
 	}

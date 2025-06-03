@@ -7,10 +7,9 @@ import (
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
+	"os"
 	"time"
 )
-
-const JwtSecret = "8c5b66db3219072f0809036a3fc0f0a4b375f1be7c100014ac06f3d0bac15de7" // Test secret. TODO: Move to env file.
 
 type MariaDBSessionRepository struct {
 	db *sql.DB
@@ -82,7 +81,7 @@ func generateToken(sessionId int64, exp time.Time) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 
-	signedToken, err := token.SignedString([]byte(JwtSecret))
+	signedToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return "", err
 	}
@@ -117,7 +116,7 @@ func (r *MariaDBSessionRepository) Validate(tokenStr string) (*domain.Session, e
 }
 
 func getToken(tokenString string) (*jwt.Token, error) {
-	secret := []byte(JwtSecret)
+	secret := []byte(os.Getenv("JWT_SECRET"))
 
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
