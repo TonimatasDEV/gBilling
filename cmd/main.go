@@ -3,15 +3,17 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/handlers"
 	"github.com/TonimatasDEV/BillingPanel/internal/adapters/persistence"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	"github.com/julienschmidt/httprouter"
-	"log"
-	"net/http"
-	"os"
 )
 
 func main() {
@@ -49,7 +51,16 @@ func main() {
 
 	log.Printf("Server running on http://localhost:%s\n", os.Getenv("PORT"))
 
-	err = http.ListenAndServe(":"+os.Getenv("PORT"), router)
+	server := &http.Server{
+		Addr:              ":" + os.Getenv("PORT"),
+		Handler:           router,
+		ReadTimeout:       5 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+
+	err = server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}

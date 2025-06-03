@@ -2,8 +2,9 @@ package domain
 
 import (
 	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {

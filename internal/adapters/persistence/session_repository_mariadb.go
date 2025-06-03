@@ -3,12 +3,13 @@ package persistence
 import (
 	"database/sql"
 	"errors"
-	"github.com/TonimatasDEV/BillingPanel/internal/domain"
-	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
-	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"os"
 	"time"
+
+	"github.com/TonimatasDEV/BillingPanel/internal/domain"
+	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type MariaDBSessionRepository struct {

@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
+
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/services"
 	"github.com/TonimatasDEV/BillingPanel/internal/util"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
-	"time"
 )
 
 type UserHandler struct {

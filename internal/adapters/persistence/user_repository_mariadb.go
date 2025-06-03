@@ -2,9 +2,10 @@ package persistence
 
 import (
 	"database/sql"
+	"log"
+
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
-	"log"
 )
 
 type MariaDBUserRepository struct {

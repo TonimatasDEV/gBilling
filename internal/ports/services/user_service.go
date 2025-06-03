@@ -2,10 +2,11 @@ package services
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/TonimatasDEV/BillingPanel/internal/domain"
 	"github.com/TonimatasDEV/BillingPanel/internal/ports/repositories"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 type UserService struct {
