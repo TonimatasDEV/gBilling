@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-      statuses: write
+      statuses: write # checkov:skip=CKV2_GHA_1 reason: Required to report linting status
 
     steps:
       - name: Checkout code

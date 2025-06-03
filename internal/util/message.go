@@ -23,10 +23,18 @@ func create(str string) *Msg {
 }
 
 func (msg *Msg) send(w http.ResponseWriter) {
-	_ = json.NewEncoder(w).Encode(msg)
+	err := json.NewEncoder(w).Encode(msg)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 func SendJSON(w http.ResponseWriter, status int, payload any) {
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(payload)
+	err := json.NewEncoder(w).Encode(payload)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }

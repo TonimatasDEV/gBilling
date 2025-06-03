@@ -73,9 +73,9 @@ func (r *MariaDBSessionRepository) Remove(token string) error {
 	return err
 }
 
-func generateToken(sessionId int64, exp time.Time) (string, error) {
+func generateToken(sessionID int64, exp time.Time) (string, error) {
 	claims := jwt.MapClaims{
-		"session_id": sessionId,
+		"session_id": sessionID,
 		"exp":        exp.Unix(),
 	}
 
@@ -129,7 +129,11 @@ func getToken(tokenString string) (*jwt.Token, error) {
 func (r *MariaDBSessionRepository) GetByID(id int64) (*domain.Session, error) {
 	var createdAt string
 	session := &domain.Session{}
-	err := r.db.QueryRow("SELECT * FROM sessions WHERE id = ?", id).Scan(&session.Id, &session.UserID, &session.Token, &createdAt, &session.Exp)
+	err := r.db.QueryRow("SELECT * FROM sessions WHERE id = ?", id).Scan(&session.ID, &session.UserID, &session.Token, &createdAt, &session.Exp)
+
+	if err != nil {
+		return nil, err
+	}
 
 	createdAtTime, err := time.Parse(time.DateTime, createdAt)
 	if err != nil {
